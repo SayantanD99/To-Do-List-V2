@@ -12,14 +12,16 @@ app.use(express.static("public"));
 
 mongoose.connect("mongodb://127.0.0.1:27017/todolistDB", {useNewUrlParser: true, useUnifiedTopology: true});
 
-//// ITEM SCHEMA////
+//ITEM SCHEMA
+
 const itemsSchema = {
   name: String
 };
 
 const Item = mongoose.model("Item", itemsSchema);
 
-////DEFAULT ITEMS////
+//DEFAULT ITEMS
+
 const item1 = new Item ({
     name: "Type a new item below"
   });
@@ -35,7 +37,8 @@ const item3 = new Item ({
 
 const defaultItems = [item1, item2, item3];
 
-////CUSTOM LIST ITEM SCHEMA////
+//CUSTOM LIST ITEM SCHEMA
+
 const listSchema = {
   name: String,
   items: [itemsSchema]
@@ -43,7 +46,8 @@ const listSchema = {
 
 const List = mongoose.model("List", listSchema);
 
-//////HOME ROUTE/////
+//HOME ROUTE
+
 app.get("/", function(req, res) {
 
   Item.find({}, function(err, foundItems) {
@@ -64,7 +68,8 @@ app.get("/", function(req, res) {
 
 });
 
-/////ADD NEW ITEM/////
+//ADD NEW ITEM
+
 app.post("/", function(req, res){
 
   const itemName = req.body.newItem;
@@ -81,7 +86,9 @@ app.post("/", function(req, res){
      res.redirect("/");
 
    }  else {
-     ///// for custom list////
+
+     // for custom list
+
      List.findOne({name: listName}, function(err, foundList) {
         foundList.items.push(item);
         foundList.save();
@@ -92,7 +99,8 @@ app.post("/", function(req, res){
 
 });
 
-/////CUSTOM LIST//////
+//CUSTOM LIST
+
 app.get("/:customListName", function(req, res) {
 
     const customListName = _.capitalize(req.params.customListName);
@@ -101,7 +109,8 @@ app.get("/:customListName", function(req, res) {
       if (!err) {
         if (!foundList) {
 
-         ////create a new list////
+         //create a new list
+
           const list = new List ({
               name: customListName,
               items: defaultItems
@@ -111,7 +120,8 @@ app.get("/:customListName", function(req, res) {
             res.redirect("/" + customListName);
         } else {
 
-        /////Show an existing list////       
+        //Show an existing list
+
         res.render("list", {listTitle: foundList.name, newListItems: foundList.items});
         }
 
@@ -120,7 +130,8 @@ app.get("/:customListName", function(req, res) {
 });
 
 
-////DELETE ITEM/////
+//DELETE ITEM
+
 app.post("/delete", function(req, res) {
   
   const checkedItemId = req.body.checkbox;
